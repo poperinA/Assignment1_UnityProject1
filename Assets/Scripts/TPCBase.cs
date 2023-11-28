@@ -11,7 +11,9 @@ namespace PGGE
         protected Transform mPlayerTransform;
         private float yPos;
         public LayerMask collisionLayer = 1 << 9;
-        Player player;
+        Animator m_Animator;
+        float m_CurrentClip;
+        float m_ClipName;
 
         public Transform CameraTransform
         {
@@ -37,21 +39,15 @@ namespace PGGE
         public void RepositionCamera()
         {
             RaycastHit hit;
-            Vector3 playerToCamera = mCameraTransform.position - mPlayerTransform.position;
+            Vector3 playerToCamera = mCameraTransform.position - (mPlayerTransform.position + new Vector3(0, CameraConstants.CameraPositionOffset.y, 0));
 
-            if (Physics.Raycast(mPlayerTransform.position, playerToCamera.normalized, out hit, playerToCamera.magnitude, collisionLayer))
+            if (Physics.Raycast(mPlayerTransform.position + new Vector3(0,CameraConstants.CameraPositionOffset.y,0), playerToCamera.normalized, out hit, playerToCamera.magnitude, collisionLayer))
             {
-                // Stores the camera height right when it collides with the wall and uses it throughout collision
-                if (player != null)
-                {
-                    yPos = CameraConstants.CameraPositionOffset.y;
-                }
-
                 // Adjust the camera position to the hit point, using the original camera height
-                mCameraTransform.position = new Vector3(hit.point.x, yPos, hit.point.z);
+                mCameraTransform.position = hit.point;
             }
         }
 
         public abstract void Update();
-    }//helofldlasolso
+    }
 }
