@@ -35,8 +35,8 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        HandleInputs();
-        Move();
+        //HandleInputs();
+        //Move();
         //Jump();
         //Crouch();
     }
