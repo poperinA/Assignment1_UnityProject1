@@ -9,6 +9,9 @@ namespace PGGE
     {
         protected Transform mCameraTransform;
         protected Transform mPlayerTransform;
+        private float yPos;
+        public LayerMask collisionLayer = 1 << 9;
+        Player player;
 
         public Transform CameraTransform
         {
@@ -33,16 +36,20 @@ namespace PGGE
 
         public void RepositionCamera()
         {
-            //-------------------------------------------------------------------
-            // Implement here.
-            //-------------------------------------------------------------------
-            //-------------------------------------------------------------------
-            // Hints:
-            //-------------------------------------------------------------------
-            // check collision between camera and the player.
-            // find the nearest collision point to the player
-            // shift the camera position to the nearest intersected point
-            //-------------------------------------------------------------------
+            RaycastHit hit;
+            Vector3 playerToCamera = mCameraTransform.position - mPlayerTransform.position;
+
+            if (Physics.Raycast(mPlayerTransform.position, playerToCamera.normalized, out hit, playerToCamera.magnitude, collisionLayer))
+            {
+                // Stores the camera height right when it collides with the wall and uses it throughout collision
+                if (player != null)
+                {
+                    yPos = CameraConstants.CameraPositionOffset.y;
+                }
+
+                // Adjust the camera position to the hit point, using the original camera height
+                mCameraTransform.position = new Vector3(hit.point.x, yPos, hit.point.z);
+            }
         }
 
         public abstract void Update();
