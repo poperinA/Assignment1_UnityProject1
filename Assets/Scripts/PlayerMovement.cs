@@ -35,8 +35,10 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        //HandleInputs();
-        //Move();
+        HandleInputs();
+        Move();
+        //Jump();
+        //Crouch();
     }
 
     private void FixedUpdate()
@@ -73,7 +75,7 @@ public class PlayerMovement : MonoBehaviour
             jump = false;
         }
 
-        if (Input.GetKeyDown(KeyCode.Tab))
+        if (Input.GetKeyDown(KeyCode.LeftControl))
         {
             crouch = !crouch;
             Crouch();
@@ -86,6 +88,7 @@ public class PlayerMovement : MonoBehaviour
 
         // We shall apply movement to the game object here.
         if (mAnimator == null) return;
+
         if (mFollowCameraForward)
         {
             // rotate Player towards the camera forward.
@@ -104,15 +107,18 @@ public class PlayerMovement : MonoBehaviour
         forward.y = 0.0f;
 
         mCharacterController.Move(forward * vInput * speed * Time.deltaTime);
+
+        // Set animator parameters based on movement input
         mAnimator.SetFloat("PosX", 0);
         mAnimator.SetFloat("PosZ", vInput * speed / (2.0f * mWalkSpeed));
 
-        if(jump)
+        if (jump)
         {
             Jump();
             jump = false;
         }
     }
+
 
     void Jump()
     {
