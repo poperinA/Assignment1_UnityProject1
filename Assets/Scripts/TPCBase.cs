@@ -9,11 +9,7 @@ namespace PGGE
     {
         protected Transform mCameraTransform;
         protected Transform mPlayerTransform;
-        private float yPos;
         public LayerMask collisionLayer = 1 << 9;
-        Animator m_Animator;
-        float m_CurrentClip;
-        float m_ClipName;
 
         public Transform CameraTransform
         {
@@ -38,12 +34,14 @@ namespace PGGE
 
         public void RepositionCamera()
         {
+            //initialize variables
             RaycastHit hit;
-            Vector3 playerToCamera = mCameraTransform.position - (mPlayerTransform.position + new Vector3(0, CameraConstants.CameraPositionOffset.y, 0));
+            Vector3 playerToCamera = mCameraTransform.position - (mPlayerTransform.position + new Vector3(0, CameraConstants.CameraPositionOffset.y, 0)); //vector from player to the camera
 
+            //checks and finds for the collision point of the camera and the object that is on the "collide" layer
             if (Physics.Raycast(mPlayerTransform.position + new Vector3(0,CameraConstants.CameraPositionOffset.y,0), playerToCamera.normalized, out hit, playerToCamera.magnitude, collisionLayer))
             {
-                // Adjust the camera position to the hit point, using the original camera height
+                //adjust the camera position to the hit point
                 mCameraTransform.position = hit.point;
             }
         }

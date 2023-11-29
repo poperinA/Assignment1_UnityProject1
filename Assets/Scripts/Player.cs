@@ -11,19 +11,7 @@ public class Player : MonoBehaviour
   public Animator mAnimator;
   public PlayerMovement mPlayerMovement;
 
-  // This is the maximum number of bullets that the player 
-  // needs to fire before reloading.
-  public int mMaxAttackBeforeReload = 1;
-
-  // This is the total number of bullets that the 
-  // player has.
-  [HideInInspector]
-  public int mAmunitionCount = 100;
-
-  // This is the count of bullets in the magazine.
-  [HideInInspector]
-  public int mBulletsInMagazine = 1;
-
+  //punch count and max punch count for recharge logic
   public int mMaxPunchCount = 3;
   [HideInInspector]
   public int mPunchCount = 0;
@@ -55,12 +43,6 @@ public class Player : MonoBehaviour
   void Update()
   {
     mFsm.Update();
-
-
-    // For Student ----------------------------------------------------//
-    // Implement the logic of button clicks for shooting. 
-    //-----------------------------------------------------------------//
-
     if (Input.GetButtonDown("Fire1"))
     {
       mAttackButtons[0] = true;
@@ -100,20 +82,4 @@ public class Player : MonoBehaviour
     mPlayerMovement.HandleInputs();
     mPlayerMovement.Move();
   }
-
-  public void NoAmmo()
-  {
-
-  }
-
-  public void Reload()
-  {
-    StartCoroutine(Coroutine_DelayReloadSound());
-  }
-
-  IEnumerator Coroutine_DelayReloadSound(float duration = 1.0f)
-  {
-    yield return new WaitForSeconds(duration);
-  }
-
 }

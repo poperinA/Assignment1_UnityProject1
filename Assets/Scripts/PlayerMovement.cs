@@ -35,14 +35,9 @@ public class PlayerMovement : MonoBehaviour
     }
     public void HandleInputs()
     {
-        // We shall handle our inputs here.
 #if UNITY_STANDALONE
         hInput = Input.GetAxis("Horizontal");
         vInput = Input.GetAxis("Vertical");
-#endif
-#if UNITY_ANDROID
-        hInput = 2.0f * mJoystick.Horizontal;
-        vInput = 2.0f * mJoystick.Vertical;
 #endif
         speed = mWalkSpeed;
         if (Input.GetKey(KeyCode.LeftShift))
@@ -68,12 +63,9 @@ public class PlayerMovement : MonoBehaviour
     public void Move()
     {
         if (crouch) return;
-
-        // We shall apply movement to the game object here.
         if (mAnimator == null) return;
         if (mFollowCameraForward)
         {
-            // rotate Player towards the camera forward.
             Vector3 eu = Camera.main.transform.rotation.eulerAngles;
             transform.rotation = Quaternion.RotateTowards(
                 transform.rotation,
@@ -123,7 +115,6 @@ public class PlayerMovement : MonoBehaviour
     }
     void ApplyGravity()
     {
-        // apply gravity.
         mVelocity.y += mGravity * Time.deltaTime;
         if (mCharacterController.isGrounded && mVelocity.y < 0)
             mVelocity.y = 0f;

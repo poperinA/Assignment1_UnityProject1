@@ -55,43 +55,19 @@ public class PlayerState_MOVEMENT : PlayerState
     public override void Update()
     {
         base.Update();
-
-        // For Student ---------------------------------------------------//
-        // Implement the logic of player movement. 
-        //----------------------------------------------------------------//
-        // Hint:
-        //----------------------------------------------------------------//
-        // You should remember that the logic for movement
-        // has already been implemented in PlayerMovement.cs.
-        // So, how do we make use of that?
-        // We certainly do not want to copy and paste the movement 
-        // code from PlayerMovement to here.
-        // Think of a way to call the Move method. 
-        //
-        // You should also
-        // check if fire buttons are pressed so that 
-        // you can transit to ATTACK state.
-
         mPlayer.Move();
 
         for (int i = 0; i < mPlayer.mAttackButtons.Length; ++i)
         {
             if (mPlayer.mAttackButtons[i])
             {
-                if (mPlayer.mBulletsInMagazine > 0)
-                {
-                    PlayerState_ATTACK attack =
-                  (PlayerState_ATTACK)mFsm.GetState(
-                            (int)PlayerStateType.ATTACK);
-
-                    attack.AttackID = i;
-                    mPlayer.mFsm.SetCurrentState(
+                PlayerState_ATTACK attack =
+              (PlayerState_ATTACK)mFsm.GetState(
                         (int)PlayerStateType.ATTACK);
-                }
-                else
-                {
-                    Debug.Log("No more ammo left");
-                }
+
+                attack.AttackID = i;
+                mPlayer.mFsm.SetCurrentState(
+                    (int)PlayerStateType.ATTACK);
             }
         }
     }
@@ -107,7 +83,7 @@ public class PlayerState_ATTACK : PlayerState
     private int mAttackID = 0;
     private string mAttackName;
 
-    private bool isPunching = false; // Added flag to track if punching is in progress
+    private bool isPunching = false; //added flag to track if punching is in progress
 
     public int AttackID
     {
@@ -129,32 +105,33 @@ public class PlayerState_ATTACK : PlayerState
 
     public override void Enter()
     {
-        if (!isPunching) // Check if not already punching
+        if (!isPunching) //check if not already punching
         {
             mPlayer.mAnimator.SetBool(mAttackName, true);
-            isPunching = true;
+            isPunching = true; //set flag to true
 
-            // Start coroutine to wait for the punch animation to complete
+            //start coroutine to wait for the punch animation to complete
             mPlayer.StartCoroutine(WaitForPunchAnimation());
         }
     }
 
     private IEnumerator WaitForPunchAnimation()
     {
-        // Determine the animation clip based on the current attack ID
+        //determine the animation clip based on the current attack ID
         string currentAnimationName = "Attack" + (mAttackID + 1).ToString();
         AnimationClip animationClip = mPlayer.mAnimator.runtimeAnimatorController.animationClips.FirstOrDefault(clip => clip.name == currentAnimationName);
 
         if (animationClip != null)
         {
-            // Wait for the duration of the animation
+            //wait for the duration of the specific animation (since there are 3 attacks)
             yield return new WaitForSeconds(animationClip.length);
 
-            // Code to execute after punch animation is complete
-            isPunching = false; // Reset the punching flag
+            //code to execute after punch animation is complete
+            isPunching = false; //reset the punching flag
             mPlayer.mPunchCount++;
             Debug.Log(mPlayer.mPunchCount);
 
+            //if the amount of punches are equal to the max amount, recharge
             if (mPlayer.mPunchCount == mPlayer.mMaxPunchCount)
             {
                 mPlayer.mPunchCount = 0;
@@ -176,7 +153,6 @@ public class PlayerState_ATTACK : PlayerState
     public override void Exit()
     {
         mPlayer.mAnimator.SetBool(mAttackName, false);
-        // No need to increment punch count or set state here
     }
 
     public override void Update()
@@ -209,7 +185,6 @@ public class PlayerState_RELOAD : PlayerState
     public override void Enter()
     {
         mPlayer.mAnimator.SetTrigger("Reload");
-        mPlayer.Reload();
         dt = 0.0f;
     }
     public override void Exit()
