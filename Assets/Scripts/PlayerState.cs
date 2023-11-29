@@ -125,7 +125,7 @@ public class PlayerState_ATTACK : PlayerState
     }
 
     public override void Enter()
-    {
+    { 
         mPlayer.mAnimator.SetBool(mAttackName, true);
         mPlayer.mPunchCount++;
         Debug.Log(mPlayer.mPunchCount);

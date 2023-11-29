@@ -28,6 +28,8 @@ public class Player : MonoBehaviour
   [HideInInspector]
   public int mPunchCount = 0;
 
+  public bool isPunchAnimationPlaying = false;
+
     [HideInInspector]
   public bool[] mAttackButtons = new bool[3];
 
