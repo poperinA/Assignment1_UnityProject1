@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using PGGE.Patterns;
+using System.Linq;
 
 public enum PlayerStateType
 {
@@ -106,6 +107,8 @@ public class PlayerState_ATTACK : PlayerState
     private int mAttackID = 0;
     private string mAttackName;
 
+    private bool isPunching = false; // Added flag to track if punching is in progress
+
     public int AttackID
     {
         get
@@ -124,43 +127,74 @@ public class PlayerState_ATTACK : PlayerState
         mId = (int)(PlayerStateType.ATTACK);
     }
 
-    public void OnAttackAnimationComplete()
+    public override void Enter()
     {
-        mPlayer.mPunchCount++;
-        Debug.Log(mPlayer.mPunchCount);
-
-        if (mPlayer.mPunchCount >= mPlayer.mMaxPunchCount)
+        if (!isPunching) // Check if not already punching
         {
-            mPlayer.mPunchCount = 0;
-            mFsm.SetCurrentState((int)PlayerStateType.RELOAD);
+            mPlayer.mAnimator.SetBool(mAttackName, true);
+            isPunching = true;
+
+            // Start coroutine to wait for the punch animation to complete
+            mPlayer.StartCoroutine(WaitForPunchAnimation());
         }
     }
 
-    public override void Enter()
-    { 
-        mPlayer.mAnimator.SetBool(mAttackName, true);
+    private IEnumerator WaitForPunchAnimation()
+    {
+        // Determine the animation clip based on the current attack ID
+        string currentAnimationName = "Attack" + (mAttackID + 1).ToString();
+        AnimationClip animationClip = mPlayer.mAnimator.runtimeAnimatorController.animationClips.FirstOrDefault(clip => clip.name == currentAnimationName);
+
+        if (animationClip != null)
+        {
+            // Wait for the duration of the animation
+            yield return new WaitForSeconds(animationClip.length);
+
+            // Code to execute after punch animation is complete
+            isPunching = false; // Reset the punching flag
+            mPlayer.mPunchCount++;
+            Debug.Log(mPlayer.mPunchCount);
+
+            if (mPlayer.mPunchCount == mPlayer.mMaxPunchCount)
+            {
+                mPlayer.mPunchCount = 0;
+                mFsm.SetCurrentState((int)PlayerStateType.RELOAD);
+            }
+        }
+        else
+        {
+            Debug.LogError("Animation clip not found for: " + currentAnimationName);
+            foreach (var clip in mPlayer.mAnimator.runtimeAnimatorController.animationClips)
+            {
+                Debug.Log("Clip Name: " + clip.name);
+            }
+
+        }
     }
+
+
     public override void Exit()
     {
         mPlayer.mAnimator.SetBool(mAttackName, false);
-        OnAttackAnimationComplete();
+        // No need to increment punch count or set state here
     }
+
     public override void Update()
     {
         base.Update();
 
-        if (mPlayer.mAttackButtons[mAttackID])
+        if (!isPunching && mPlayer.mAttackButtons[mAttackID])
         {
-            mPlayer.mAnimator.SetBool(mAttackName, true);
+            mPlayer.mFsm.SetCurrentState((int)PlayerStateType.ATTACK);
         }
-
         else
         {
-            mPlayer.mAnimator.SetBool(mAttackName, false);
             mPlayer.mFsm.SetCurrentState((int)PlayerStateType.MOVEMENT);
         }
     }
 }
+
+
 
 public class PlayerState_RELOAD : PlayerState
 {

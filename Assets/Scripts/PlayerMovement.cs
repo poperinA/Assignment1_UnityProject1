@@ -27,8 +27,7 @@ public class PlayerMovement : MonoBehaviour
     }
     void Update()
     {
-        //HandleInputs();
-        //Move();
+ 
     }
     private void FixedUpdate()
     {
@@ -58,15 +57,18 @@ public class PlayerMovement : MonoBehaviour
         {
             jump = false;
         }
+
         if (Input.GetKeyDown(KeyCode.LeftControl))
         {
             crouch = !crouch;
             Crouch();
         }
     }
+
     public void Move()
     {
         if (crouch) return;
+
         // We shall apply movement to the game object here.
         if (mAnimator == null) return;
         if (mFollowCameraForward)
@@ -82,17 +84,21 @@ public class PlayerMovement : MonoBehaviour
         {
             transform.Rotate(0.0f, hInput * mRotationSpeed * Time.deltaTime, 0.0f);
         }
+
         Vector3 forward = transform.TransformDirection(Vector3.forward).normalized;
         forward.y = 0.0f;
+
         mCharacterController.Move(forward * vInput * speed * Time.deltaTime);
         mAnimator.SetFloat("PosX", 0);
         mAnimator.SetFloat("PosZ", vInput * speed / (2.0f * mWalkSpeed));
-        if (jump)
+
+        if(jump)
         {
             Jump();
             jump = false;
         }
     }
+
     void Jump()
     {
         mAnimator.SetTrigger("Jump");

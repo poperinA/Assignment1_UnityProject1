@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Sound : MonoBehaviour
 {
+    public Animator mAnimator;
 
     public List<AudioClip> concreteFS;
     public List<AudioClip> dirtFS;
@@ -103,9 +104,20 @@ public class Sound : MonoBehaviour
 
         if (clip != null)
         {
-            footstepSource.volume = Random.Range(0.04f, 0.07f);
-            footstepSource.pitch = Random.Range(0.5f, 1.2f);
+
+            if (mAnimator.GetFloat("PosZ") == 1)
+            {
+                footstepSource.volume = Random.Range(0.08f, 0.2f);
+                footstepSource.pitch = Random.Range(1f, 1.6f);
+                footstepSource.PlayOneShot(clip);
+            }
+            else
+            {
+            footstepSource.volume = Random.Range(0.08f, 0.2f);
+            footstepSource.pitch = Random.Range(0.4f, 1f);
             footstepSource.PlayOneShot(clip);
+            }
+
         }
     }
 }
