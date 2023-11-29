@@ -124,22 +124,26 @@ public class PlayerState_ATTACK : PlayerState
         mId = (int)(PlayerStateType.ATTACK);
     }
 
+    public void OnAttackAnimationComplete()
+    {
+        mPlayer.mPunchCount++;
+        Debug.Log(mPlayer.mPunchCount);
+
+        if (mPlayer.mPunchCount >= mPlayer.mMaxPunchCount)
+        {
+            mPlayer.mPunchCount = 0;
+            mFsm.SetCurrentState((int)PlayerStateType.RELOAD);
+        }
+    }
+
     public override void Enter()
     { 
         mPlayer.mAnimator.SetBool(mAttackName, true);
-        mPlayer.mPunchCount++;
-        Debug.Log(mPlayer.mPunchCount);
-        Debug.Log(mPlayer.mMaxPunchCount);
-
-        if (mPlayer.mPunchCount > mPlayer.mMaxPunchCount)
-        {
-            mPlayer.mPunchCount = 0;
-            mPlayer.mFsm.SetCurrentState((int)PlayerStateType.RELOAD);
-        }
     }
     public override void Exit()
     {
         mPlayer.mAnimator.SetBool(mAttackName, false);
+        OnAttackAnimationComplete();
     }
     public override void Update()
     {
