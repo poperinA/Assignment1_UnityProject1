@@ -12,9 +12,9 @@ public class Player : MonoBehaviour
   public PlayerMovement mPlayerMovement;
 
   //punch count and max punch count for recharge logic
-  public int mMaxPunchCount = 3;
+  public int mMaxAttackCount = 3;
   [HideInInspector]
-  public int mPunchCount = 0;
+  public int mAttackCount = 0;
 
 
     [HideInInspector]

@@ -83,7 +83,7 @@ public class PlayerState_ATTACK : PlayerState
     private int mAttackID = 0;
     private string mAttackName;
 
-    private bool isPunching = false; //added flag to track if punching is in progress
+    private bool isAttacking = false; //added flag to track if attacking is in progress
 
     public int AttackID
     {
@@ -105,21 +105,22 @@ public class PlayerState_ATTACK : PlayerState
 
     public override void Enter()
     {
-        if (!isPunching) //check if not already punching
+        if (!isAttacking) //check if not already attacking
         {
             mPlayer.mAnimator.SetBool(mAttackName, true);
-            isPunching = true; //set flag to true
+            isAttacking = true; //set flag to true
 
-            //start coroutine to wait for the punch animation to complete
-            mPlayer.StartCoroutine(WaitForPunchAnimation());
+            //start coroutine to wait for the attack animation to complete
+            mPlayer.StartCoroutine(WaitForAnimation());
         }
     }
 
-    private IEnumerator WaitForPunchAnimation()
+    private IEnumerator WaitForAnimation()
     {
         //determine the animation clip based on the current attack ID
         string currentAnimationName = "Attack" + (mAttackID + 1).ToString();
-        AnimationClip animationClip = mPlayer.mAnimator.runtimeAnimatorController.animationClips.FirstOrDefault(clip => clip.name == currentAnimationName);
+        AnimationClip animationClip = mPlayer.mAnimator.runtimeAnimatorController.animationClips
+            .FirstOrDefault(clip => clip.name == currentAnimationName);
 
         if (animationClip != null)
         {
@@ -127,14 +128,14 @@ public class PlayerState_ATTACK : PlayerState
             yield return new WaitForSeconds(animationClip.length);
 
             //code to execute after punch animation is complete
-            isPunching = false; //reset the punching flag
-            mPlayer.mPunchCount++;
-            Debug.Log(mPlayer.mPunchCount);
+            isAttacking = false; //reset the punching flag
+            mPlayer.mAttackCount++;
+            Debug.Log(mPlayer.mAttackCount);
 
-            //if the amount of punches are equal to the max amount, recharge
-            if (mPlayer.mPunchCount == mPlayer.mMaxPunchCount)
+            //if the amount of attacks are equal to the max amount, recharge
+            if (mPlayer.mAttackCount == mPlayer.mMaxAttackCount)
             {
-                mPlayer.mPunchCount = 0;
+                mPlayer.mAttackCount = 0;
                 mFsm.SetCurrentState((int)PlayerStateType.RELOAD);
             }
         }
@@ -159,7 +160,7 @@ public class PlayerState_ATTACK : PlayerState
     {
         base.Update();
 
-        if (!isPunching && mPlayer.mAttackButtons[mAttackID])
+        if (!isAttacking && mPlayer.mAttackButtons[mAttackID])
         {
             mPlayer.mFsm.SetCurrentState((int)PlayerStateType.ATTACK);
         }
